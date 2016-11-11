@@ -39,8 +39,11 @@ def scheme_eval(expr, env, _=None): # Optional third argument is ignored
         return SPECIAL_FORMS[first](rest, env)
     else:
         # BEGIN PROBLEM 5
-        rest.map(scheme_eval)
-        return scheme_apply(env.lookup(first), rest, env)
+        check_procedure(scheme_eval(first, env))
+        def eval_container(expr):
+            return scheme_eval(expr, env)
+        rest = rest.map(eval_container)
+        return scheme_apply(scheme_eval(first, env), rest, env) 
         # END PROBLEM 5
 
 def self_evaluating(expr):
@@ -57,6 +60,11 @@ def eval_all(expressions, env):
     """Evaluate a Scheme list of EXPRESSIONS & return the value of the last."""
     # BEGIN PROBLEM 8
     "*** REPLACE THIS LINE ***"
+    if expressions == nil:
+        return 
+    while expressions.second != nil:
+        scheme_eval(expressions.first, env)
+        expressions = expressions.second
     return scheme_eval(expressions.first, env)
     # END PROBLEM 8
 
@@ -109,6 +117,13 @@ class Frame:
         child = Frame(self) # Create a new child with self as the parent
         # BEGIN PROBLEM 11
         "*** REPLACE THIS LINE ***"
+        while formals != nil or vals!= nil:
+            if formals == nil or vals == nil:
+                raise SchemeError('Formals and vals are not the same length')
+            child.bindings.update({formals.first:vals.first})
+            formals = formals.second
+            vals = vals.second
+
         # END PROBLEM 11
         return child
 
@@ -181,6 +196,8 @@ class LambdaProcedure(UserDefinedProcedure):
         of values, for a lexically-scoped call evaluated in environment ENV."""
         # BEGIN PROBLEM 12
         "*** REPLACE THIS LINE ***"
+        f = self.env.make_child_frame(self.formals, args)
+        return f
         # END PROBLEM 12
 
     def __str__(self):
@@ -214,11 +231,14 @@ def do_define_form(expressions, env):
     if scheme_symbolp(target):
         check_form(expressions, 2, 2)
         # BEGIN PROBLEM 6
-        "*** REPLACE THIS LINE ***"
+        env.define(target, scheme_eval(expressions.second.first, env))
+        return expressions.first
         # END PROBLEM 6
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 10
         "*** REPLACE THIS LINE ***"
+        env.define(target.first, do_lambda_form(Pair(target.second, expressions.second), env))
+        return target.first
         # END PROBLEM 10
     else:
         bad_target = target.first if isinstance(target, Pair) else target
@@ -229,6 +249,7 @@ def do_quote_form(expressions, env):
     check_form(expressions, 1, 1)
     # BEGIN PROBLEM 7
     "*** REPLACE THIS LINE ***"
+    return expressions.first
     # END PROBLEM 7
 
 def do_begin_form(expressions, env):
@@ -243,6 +264,8 @@ def do_lambda_form(expressions, env):
     check_formals(formals)
     # BEGIN PROBLEM 9
     "*** REPLACE THIS LINE ***"
+    l = LambdaProcedure(expressions.first, expressions.second, env)
+    return l
     # END PROBLEM 9
 
 def do_if_form(expressions, env):

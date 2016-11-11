@@ -91,7 +91,13 @@ class nil:
 nil = nil() # Assignment hides the nil class; there is only one instance
 
 # Scheme list parser
+####################
+# Custom Functions #
+####################
 
+def error_log(x):
+    with open('errors.log', 'a') as f:
+        f.write('\n' + str(x))
 
 def scheme_read(src):
     """Read the next expression from SRC, a Buffer of tokens.
@@ -108,6 +114,7 @@ def scheme_read(src):
     if src.current() is None:
         raise EOFError
     val = src.remove_front() # Get the first token
+    error_log(val)
     if val == 'nil':
         # BEGIN PROBLEM 1
         return nil
@@ -119,6 +126,7 @@ def scheme_read(src):
     elif val == "'":
         # BEGIN PROBLEM 7B
         "*** REPLACE THIS LINE ***"
+        return Pair('quote', Pair(scheme_read(src), nil))
         # END PROBLEM 7B
     elif val not in DELIMITERS:
         return val
