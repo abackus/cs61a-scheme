@@ -196,8 +196,7 @@ class LambdaProcedure(UserDefinedProcedure):
         of values, for a lexically-scoped call evaluated in environment ENV."""
         # BEGIN PROBLEM 12
         "*** REPLACE THIS LINE ***"
-        f = self.env.make_child_frame(self.formals, args)
-        return f
+        return self.env.make_child_frame(self.formals, args)
         # END PROBLEM 12
 
     def __str__(self):
@@ -264,8 +263,7 @@ def do_lambda_form(expressions, env):
     check_formals(formals)
     # BEGIN PROBLEM 9
     "*** REPLACE THIS LINE ***"
-    l = LambdaProcedure(expressions.first, expressions.second, env)
-    return l
+    return LambdaProcedure(expressions.first, expressions.second, env)
     # END PROBLEM 9
 
 def do_if_form(expressions, env):
@@ -279,13 +277,26 @@ def do_if_form(expressions, env):
 def do_and_form(expressions, env):
     """Evaluate a short-circuited and form."""
     # BEGIN PROBLEM 13
-    "*** REPLACE THIS LINE ***"
+    if expressions is nil:
+        return True
+    val = scheme_eval(expressions.first, env)
+    if scheme_falsep(val):
+        return False
+    daf_rec = do_and_form(expressions.second, env)
+    if daf_rec is True:
+        return val
+    return daf_rec
     # END PROBLEM 13
 
 def do_or_form(expressions, env):
     """Evaluate a short-circuited or form."""
     # BEGIN PROBLEM 13
-    "*** REPLACE THIS LINE ***"
+    if expressions is nil:
+        return False
+    val = scheme_eval(expressions.first, env)
+    if scheme_truep(val):
+        return val
+    return do_or_form(expressions.second, env)
     # END PROBLEM 13
 
 def do_cond_form(expressions, env):
@@ -301,7 +312,9 @@ def do_cond_form(expressions, env):
             test = scheme_eval(clause.first, env)
         if scheme_truep(test):
             # BEGIN PROBLEM 14
-            "*** REPLACE THIS LINE ***"
+            if clause.second is nil:
+                return test
+            return eval_all(clause.second, env)
             # END PROBLEM 14
         expressions = expressions.second
 
@@ -316,10 +329,18 @@ def make_let_frame(bindings, env):
     BINDINGS. The Scheme list BINDINGS must have the form of a proper bindings
     list in a let expression: each item must be a list containing a symbol and a
     Scheme expression."""
+    formals, params = nil, nil
     if not scheme_listp(bindings):
         raise SchemeError('bad bindings list in let form')
     # BEGIN PROBLEM 15
-    "*** REPLACE THIS LINE ***"
+    while bindings is not nil:
+        car = bindings.first
+        check_form(car, 2, 2)
+        bindings = bindings.second
+        formals = Pair(car.first, formals)
+        params = Pair(scheme_eval(car.second.first, env), params)
+    check_formals(formals)
+    return env.make_child_frame(formals, params)
     # END PROBLEM 15
 
 SPECIAL_FORMS = {
@@ -398,7 +419,11 @@ class MuProcedure(UserDefinedProcedure):
         self.body = body
 
     # BEGIN PROBLEM 16
-    "*** REPLACE THIS LINE ***"
+    def make_call_frame(self, args, env):
+        """Make a frame that binds the formal parameters to ARGS, a Scheme list
+        of values, for a dynamically-scoped call evaluated in environment ENV."""
+        f = env.make_child_frame(self.formals, args)
+        return f
     # END PROBLEM 16
 
     def __str__(self):
@@ -415,6 +440,7 @@ def do_mu_form(expressions, env):
     check_formals(formals)
     # BEGIN PROBLEM 16
     "*** REPLACE THIS LINE ***"
+    return MuProcedure(formals, expressions.second)
     # END PROBLEM 16
 
 SPECIAL_FORMS['mu'] = do_mu_form
