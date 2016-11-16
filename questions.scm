@@ -11,8 +11,7 @@
   (map (lambda (x) (cons first x)) rests))
 
 (define (zip pairs)
-  (if (null? pairs) nil 
-    (list (cons (car (car pairs)) (car (zip (cdr pairs)))) (cons (car (cdr (car (pairs)))) (car (cdr (zip (cdr pairs))))))))
+  (list (map car pairs) (map cadr pairs)))
 
 ;; Problem 17
 ;; Returns a list of two-element lists
@@ -73,7 +72,7 @@
          (let ((values (cadr expr))
                (body   (cddr expr)))
            ; BEGIN PROBLEM 19
-           (cons (cons 'lambda (cons (let-to-lambda (map (lambda (x) (car x)) values)) (let-to-lambda body))) (let-to-lambda (map (lambda (x) (car (cdr x))) values)))
+           (cons (cons 'lambda (cons (let-to-lambda (car (zip values))) (let-to-lambda body))) (let-to-lambda (cadr (zip values))))
            ; END PROBLEM 19
            ))
         (else
