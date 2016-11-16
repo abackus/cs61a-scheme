@@ -561,6 +561,38 @@ one-through-four
 (add2xy 3 7)
 ; expect 13
 
+(define (complex-add x y) (cons (+ (car x) (car y)) (+ (cdr x) (cdr y))))
+(* 0 (complex-add (cons 1 0) (cons 0 1)))
+; expect Error
+(define (complex-multiply x y) (cons (- (* (car x) (car y)) (* (cdr x) (cdr y))) (+ (* (car x) (cdr y)) (* (car y) (cdr x)))))
+(complex-multiply (cons 1 1) (cons 1 1))
+; expect (0 . 2)
+
+(define (define symbol val) symbol)
+(define x 2)
+x
+; expect 2
+
+'(define x)
+; expect (define x)
+
+(let ((q '(define x 3))) (eval q) x)
+; expect 3
+x
+; expect 2
+
+'(fib (+ 0 1 1 2 3 5))
+; expect (fib (+ 0 1 1 2 3 5))
+
+(begin (begin (+ 2 2) (+ 3 5)) (begin 'reagan 'bay 'of 'pigs 'invasion))
+; expect invasion
+
+(begin (define children 'ofthalidomide) children)
+; expect ofthalidomide
+children
+; expect ofthalidomide
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scheme Implementations ;;;
