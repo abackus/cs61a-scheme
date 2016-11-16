@@ -575,6 +575,8 @@ x
 
 '(define x)
 ; expect (define x)
+x
+; expect 2
 
 (let ((q '(define x 3))) (eval q) x)
 ; expect 3
@@ -592,7 +594,53 @@ x
 children
 ; expect ofthalidomide
 
+(define trajectory (lambda (x_0 v_0 a_0) (lambda (t) (+ x_0 (* v_0 t) (* .5 a_0 t t)))))
+(define f (trajectory 0 0 9.8))
+(f 2)
+; expect 19.6
 
+(define Kappa 256)
+(define (Keepo) (define Kappa 512) Kappa)
+Keepo
+; expect 512
+Kappa
+; expect 256
+
+(or 256 (let ((lol (lambda x) (lol x))) (lol 256)))
+; expect 256
+(or (let ((lol (lambda x) (lol x))) (lol 256)) 256)
+; expect Error
+
+(and 1 (and 2 (and 3 (and 4))))
+; expect 4
+(and false (and 2 (and 3 (and 4))))
+; expect false
+(and 1 and)
+; expect Error
+(and false and)
+; expect false
+
+(define vim 100)
+(let ((vigor 10) (vigour 20) (valor 30) (valour 40) (vim 10))
+     (cond ((= vim vigor) (define vim 20) 0)
+           ((= vim vigour) 1)
+           ((= vim valor) 2)
+           ((= vim valour 3))))
+; expect 0
+
+(cond (false 100) (else 10000))
+; expect 10000
+
+(define e 30) (define x 20) (define ander 10)
+(define a (mu (l) (* (+ e x ander) l)))
+(let ((e 20)) (a e))
+; expect 1000
+
+
+(define e 30) (define x 20) (define ander 10)
+(define a (lambda (l) (* (+ e x ander) l)))
+(let ((e 20)) (a e))
+; expect 1200
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scheme Implementations ;;;
