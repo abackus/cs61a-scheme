@@ -526,7 +526,11 @@ def scheme_optimized_eval(expr, env, tail=False):
             result = SPECIAL_FORMS[first](rest, env)
         else:
             # BEGIN Extra Credit
-            "*** REPLACE THIS LINE ***"
+            check_procedure(scheme_eval(first, env))
+            def eval_container(expr):
+                return scheme_eval(expr, env)
+            rest = rest.map(eval_container)
+            return scheme_apply(scheme_eval(first, env), rest, env) 
             # END Extra Credit
     return result
 
