@@ -198,7 +198,7 @@ def read_print_loop():
                 expression = scheme_read(src)
                 print('str :', expression)
                 print('repr:', repr(expression))
-        except (SyntaxError, ValueError) as err:
+        except (SyntaxError, ValueError, ZeroDivisionError) as err:
             print(type(err).__name__ + ':', err)
         except (KeyboardInterrupt, EOFError):  # <Control>-D, etc.
             print()

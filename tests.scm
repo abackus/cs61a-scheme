@@ -601,7 +601,7 @@ children
 
 (define Kappa 256)
 (define (Keepo) (define Kappa 512) Kappa)
-Keepo
+(Keepo)
 ; expect 512
 Kappa
 ; expect 256
@@ -614,11 +614,11 @@ Kappa
 (and 1 (and 2 (and 3 (and 4))))
 ; expect 4
 (and false (and 2 (and 3 (and 4))))
-; expect false
+; expect False
 (and 1 and)
 ; expect Error
 (and false and)
-; expect false
+; expect False
 
 (define vim 100)
 (let ((vigor 10) (vigour 20) (valor 30) (valour 40) (vim 10))

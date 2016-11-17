@@ -526,18 +526,24 @@ def scheme_optimized_eval(expr, env, tail=False):
             result = SPECIAL_FORMS[first](rest, env)
         else:
             # BEGIN Extra Credit
-            check_procedure(scheme_eval(first, env))
-            def eval_container(expr):
-                return scheme_eval(expr, env)
-            rest = rest.map(eval_container)
-            return scheme_apply(scheme_eval(first, env), rest, env) 
+            result = scheme_eval(expr, env)
+            # first_res = scheme_eval(first, env)
+            # check_procedure(first_res)
+            # def eval_container(expr):
+            #     return scheme_eval(expr, env)
+            # rest = rest.map(eval_container)
+            # next = scheme_apply(first_res, rest, env)
+            # if scheme_listp(next):
+            #     result = Thunk(next, env) 
+            # else:
+            #     result = next
             # END Extra Credit
     return result
 
 ################################################################
 # Uncomment the following line to apply tail call optimization #
 ################################################################
-#scheme_eval = scheme_optimized_eval
+scheme_eval = scheme_optimized_eval
 
 
 ################
@@ -558,8 +564,8 @@ def read_eval_print_loop(next_line, env, interactive=False, quiet=False,
                 result = scheme_eval(expression, env)
                 if not quiet and result is not None:
                     print(result)
-        except (SchemeError, SyntaxError, ValueError, RuntimeError) as err:
-            error_log('Error:' + err)
+        except (SchemeError, SyntaxError, ValueError, RuntimeError, ZeroDivisionError) as err:
+            error_log('Error:' + str(err))
             if (isinstance(err, RuntimeError) and
                 'maximum recursion depth exceeded' not in getattr(err, 'args')[0]):
                 raise
@@ -577,6 +583,7 @@ def read_eval_print_loop(next_line, env, interactive=False, quiet=False,
         except EOFError:  # <Control>-D, etc.
             print()
             return
+
 
 def scheme_load(*args):
     """Load a Scheme source file. ARGS should be of the form (SYM, ENV) or (SYM,
